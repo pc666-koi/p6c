@@ -207,20 +207,24 @@
   }
 
   .theme-toggle {
-    width: 42px;
-    height: 42px;
+    width: 54px;
+    height: 54px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     background: var(--color-bg-alt);
-    border: 1px solid var(--color-border);
-    color: var(--color-text);
-    font-size: 16px;
-    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid var(--color-primary);
+    color: var(--color-primary);
+    font-size: 22px;
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12), 0 4px 12px rgba(0, 0, 0, 0.12);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
   }
 
-  .theme-toggle:hover { transform: rotate(20deg) scale(1.06); }
+  .theme-toggle:hover {
+    transform: rotate(20deg) scale(1.08);
+    box-shadow: 0 0 0 6px rgba(99, 102, 241, 0.2), 0 6px 18px rgba(99, 102, 241, 0.3);
+  }
 
   .hamburger {
     display: none;
