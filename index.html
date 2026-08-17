@@ -1,0 +1,2523 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>潘晨 · 个人主页</title>
+<meta name="description" content="潘晨的个人主页 - 浙江理工大学机器人工程专业学生">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+  :root {
+    --color-primary: #3b82f6;
+    --color-primary-dark: #2563eb;
+    --color-primary-light: #93c5fd;
+    --color-secondary: #0ea5e9;
+    --color-accent: #f59e0b;
+    --color-success: #10b981;
+    --color-warning: #f59e0b;
+    --color-error: #ef4444;
+
+    --color-bg: #eaf5ef;
+    --color-bg-alt: #dceae3;
+    --color-bg-card: #f4f9f6;
+    --color-border: #c5d9cf;
+    --color-text: #1f2937;
+    --color-text-muted: #6b7280;
+    --color-text-soft: #9ca3af;
+
+    --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+    --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+    --shadow-lg: 0 20px 40px rgba(15, 23, 42, 0.12);
+    --shadow-xl: 0 30px 60px rgba(15, 23, 42, 0.18);
+
+    --radius-sm: 8px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --nav-height: 72px;
+  }
+
+  [data-theme="dark"] {
+    --color-bg: #0a0612;
+    --color-bg-alt: #120a1f;
+    --color-bg-card: #1a0f2e;
+    --color-border: #2d1b47;
+    --color-text: #f3e8ff;
+    --color-text-muted: #c4b5e0;
+    --color-text-soft: #9d8ab8;
+
+    --shadow-sm: 0 1px 2px rgba(124, 58, 237, 0.15);
+    --shadow-md: 0 8px 24px rgba(124, 58, 237, 0.2);
+    --shadow-lg: 0 20px 40px rgba(124, 58, 237, 0.25);
+    --shadow-xl: 0 30px 60px rgba(124, 58, 237, 0.3);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--color-bg);
+    color: var(--color-text);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    transition: background-color 0.35s ease, color 0.35s ease;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4 { line-height: 1.2; font-weight: 700; }
+  p { line-height: 1.7; color: var(--color-text-muted); }
+  a { text-decoration: none; color: inherit; }
+  ul { list-style: none; }
+  img { max-width: 100%; display: block; }
+  button { font-family: inherit; cursor: pointer; border: none; background: none; }
+
+  .container {
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  section { padding: 120px 0; }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 64px;
+  }
+
+  .section-tag {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: var(--color-primary);
+    background: rgba(59, 130, 246, 0.1);
+    padding: 6px 16px;
+    border-radius: 999px;
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-size: 36px;
+    font-weight: 900;
+    color: var(--color-text);
+  }
+
+  .section-subtitle {
+    margin-top: 12px;
+    font-size: 16px;
+    color: var(--color-text-muted);
+  }
+
+  /* ---------- Reveal animation ---------- */
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+
+  /* ---------- Navbar ---------- */
+  .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    height: var(--nav-height);
+    display: flex;
+    align-items: center;
+    background: transparent;
+    transition: background-color 0.35s ease, box-shadow 0.35s ease, backdrop-filter 0.35s ease;
+  }
+
+  .navbar.scrolled {
+    background: rgba(244, 249, 246, 0.8);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 1px 0 rgba(15, 23, 42, 0.06);
+  }
+
+  [data-theme="dark"] .navbar.scrolled {
+    background: rgba(10, 6, 18, 0.8);
+    box-shadow: 0 1px 0 rgba(124, 58, 237, 0.15);
+  }
+
+  .nav-inner {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .nav-logo {
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--color-text);
+    letter-spacing: 0.02em;
+  }
+
+  .nav-logo span { color: var(--color-primary); }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+  }
+
+  .nav-links a {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--color-text-muted);
+    position: relative;
+    padding: 6px 0;
+    transition: color 0.25s ease;
+  }
+
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 0;
+    height: 2px;
+    background: var(--color-primary);
+    transition: width 0.25s ease;
+  }
+
+  .nav-links a:hover { color: var(--color-primary); }
+  .nav-links a:hover::after { width: 100%; }
+
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .theme-toggle {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-bg-alt);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    font-size: 16px;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+  }
+
+  .theme-toggle:hover { transform: rotate(20deg) scale(1.06); }
+
+  .hamburger {
+    display: none;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-bg-alt);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    font-size: 18px;
+  }
+
+  .mobile-menu {
+    position: fixed;
+    top: var(--nav-height);
+    left: 0;
+    right: 0;
+    background: var(--color-bg);
+    border-bottom: 1px solid var(--color-border);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-8px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    z-index: 999;
+  }
+
+  .mobile-menu.open {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .mobile-menu ul {
+    display: flex;
+    flex-direction: column;
+    padding: 12px 24px 24px;
+  }
+
+  .mobile-menu a {
+    display: block;
+    padding: 14px 0;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--color-text);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .mobile-menu li:last-child a { border-bottom: none; }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding-top: var(--nav-height);
+    background: linear-gradient(135deg, #eaf5ef 0%, #f4f9f6 45%, #d8ebe1 100%);
+    overflow: hidden;
+  }
+
+  [data-theme="dark"] .hero {
+    background:
+      radial-gradient(circle at 15% 20%, rgba(124, 58, 237, 0.22), transparent 45%),
+      radial-gradient(circle at 85% 80%, rgba(236, 72, 153, 0.18), transparent 50%),
+      linear-gradient(135deg, #0a0612 0%, #14091f 45%, #1a0b2e 100%);
+  }
+
+  .hero::before,
+  .hero::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.5;
+    z-index: 0;
+  }
+
+  .hero::before {
+    width: 420px;
+    height: 420px;
+    background: var(--color-primary-light);
+    top: -120px;
+    right: -100px;
+  }
+
+  .hero::after {
+    width: 320px;
+    height: 320px;
+    background: var(--color-secondary);
+    bottom: -80px;
+    left: -80px;
+    opacity: 0.25;
+  }
+
+  [data-theme="dark"] .hero::before {
+    background: #7c3aed;
+    opacity: 0.45;
+    filter: blur(70px);
+  }
+
+  [data-theme="dark"] .hero::after {
+    background: #ec4899;
+    opacity: 0.35;
+    filter: blur(70px);
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    max-width: 720px;
+    padding: 0 24px;
+  }
+
+  .hero-avatar {
+    width: 128px;
+    height: 128px;
+    border-radius: 50%;
+    margin: 0 auto 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+    box-shadow: 0 20px 45px rgba(59, 130, 246, 0.35);
+    font-size: 52px;
+    color: #ffffff;
+    border: 4px solid #ffffff;
+    animation: float-avatar 5s ease-in-out infinite;
+    overflow: hidden;
+  }
+
+  .hero-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  [data-theme="dark"] .hero-avatar {
+    border-color: #1a0f2e;
+    background: linear-gradient(135deg, #7c3aed, #ec4899);
+    box-shadow: 0 20px 45px rgba(124, 58, 237, 0.45);
+  }
+
+  @keyframes float-avatar {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+
+  .hero-name {
+    font-size: 52px;
+    font-weight: 900;
+    color: var(--color-text);
+    margin-bottom: 16px;
+    letter-spacing: 0.02em;
+  }
+
+  .hero-name span { color: var(--color-primary); }
+
+  .hero-tagline {
+    font-size: 19px;
+    color: var(--color-text-muted);
+    margin-bottom: 40px;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 34px;
+    border-radius: 999px;
+    font-size: 15px;
+    font-weight: 500;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
+  }
+
+  .btn-primary {
+    background: var(--color-primary);
+    color: #ffffff;
+    box-shadow: 0 12px 28px rgba(59, 130, 246, 0.35);
+  }
+
+  .btn-primary:hover {
+    background: var(--color-primary-dark);
+    transform: translateY(-3px);
+    box-shadow: 0 16px 34px rgba(59, 130, 246, 0.42);
+  }
+
+  .btn-primary i { transition: transform 0.25s ease; }
+  .btn-primary:hover i { transform: translateY(3px); }
+
+  /* ---------- About ---------- */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 72px;
+    align-items: center;
+  }
+
+  .about-text h3 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--color-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 14px;
+  }
+
+  .about-text p { margin-bottom: 20px; font-size: 16px; }
+
+  .about-highlights {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 32px;
+  }
+
+  .highlight-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 18px;
+    background: var(--color-bg-alt);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border);
+  }
+
+  .highlight-item i {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(59, 130, 246, 0.12);
+    color: var(--color-primary);
+    font-size: 16px;
+  }
+
+  .highlight-item div h4 { font-size: 14.5px; color: var(--color-text); margin-bottom: 4px; }
+  .highlight-item div p { font-size: 13px; margin: 0; }
+
+  .about-avatar-wrap { display: flex; justify-content: center; }
+
+  .about-avatar {
+    width: 300px;
+    height: 300px;
+    border-radius: var(--radius-lg);
+    background: linear-gradient(150deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 96px;
+    color: rgba(255, 255, 255, 0.95);
+    box-shadow: var(--shadow-xl);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .about-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .about-avatar::before {
+    content: '';
+    position: absolute;
+    inset: -14px;
+    border: 2px dashed rgba(59, 130, 246, 0.35);
+    border-radius: calc(var(--radius-lg) + 14px);
+  }
+
+  [data-theme="dark"] .about-avatar::before {
+    border-color: rgba(168, 85, 247, 0.5);
+  }
+
+  [data-theme="dark"] .about-avatar {
+    background: linear-gradient(150deg, #7c3aed 0%, #ec4899 100%);
+    box-shadow: 0 30px 60px rgba(124, 58, 237, 0.4);
+  }
+
+  /* ---------- Projects ---------- */
+  .project-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+  }
+
+  .project-card {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 30px;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border-color 0.35s ease;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .project-card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-xl);
+    border-color: rgba(59, 130, 246, 0.3);
+  }
+
+  .project-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(59, 130, 246, 0.12);
+    color: var(--color-primary);
+    font-size: 22px;
+    margin-bottom: 20px;
+  }
+
+  .project-card h3 { font-size: 19px; margin-bottom: 10px; color: var(--color-text); }
+  .project-card p { font-size: 14.5px; margin-bottom: 20px; flex-grow: 1; }
+
+  .tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 22px;
+  }
+
+  .tag {
+    font-size: 12px;
+    font-weight: 500;
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: var(--color-bg-alt);
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border);
+  }
+
+  .project-links {
+    display: flex;
+    gap: 20px;
+    border-top: 1px solid var(--color-border);
+    padding-top: 18px;
+  }
+
+  .project-links a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--color-text-muted);
+    transition: color 0.25s ease;
+  }
+
+  .project-links a:hover { color: var(--color-primary); }
+
+  /* ---------- Skills ---------- */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+  }
+
+  .skill-category {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 32px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .skill-category-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+
+  .skill-category-header i {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(59, 130, 246, 0.12);
+    color: var(--color-primary);
+    font-size: 18px;
+  }
+
+  .skill-category-header h3 { font-size: 17px; color: var(--color-text); }
+
+  .skill-item { margin-bottom: 22px; }
+  .skill-item:last-child { margin-bottom: 0; }
+
+  .skill-item-top {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+
+  .skill-item-top span:first-child { color: var(--color-text); font-weight: 500; }
+  .skill-item-top span:last-child { color: var(--color-primary); font-weight: 700; }
+
+  .skill-bar-track {
+    height: 8px;
+    border-radius: 999px;
+    background: var(--color-bg-alt);
+    overflow: hidden;
+  }
+
+  .skill-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    width: 0%;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+    transition: width 1.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* ---------- Contact ---------- */
+  .contact-grid {
+    display: flex;
+    justify-content: center;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  .contact-info-card {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 36px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .contact-info-card h3 { font-size: 18px; margin-bottom: 8px; color: var(--color-text); }
+  .contact-info-card > p { font-size: 14.5px; margin-bottom: 28px; }
+
+  .contact-social-list { display: flex; flex-direction: column; gap: 14px; }
+
+  .contact-social-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border);
+    transition: transform 0.25s ease, border-color 0.25s ease, background-color 0.25s ease;
+    position: relative;
+  }
+
+  .contact-social-item:hover {
+    transform: translateX(6px);
+    border-color: var(--color-primary);
+    background: rgba(59, 130, 246, 0.06);
+  }
+
+  .contact-social-item i {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(59, 130, 246, 0.12);
+    color: var(--color-primary);
+    font-size: 17px;
+  }
+
+  .contact-social-item .label { font-size: 12.5px; color: var(--color-text-soft); }
+  .contact-social-item .value { font-size: 14.5px; font-weight: 500; color: var(--color-text); }
+
+  .wechat-qr-hint {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+    color: var(--color-text-soft);
+  }
+
+  .contact-form-card {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 36px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .form-row { margin-bottom: 20px; }
+  .form-row-double { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+  .form-row label {
+    display: block;
+    font-size: 13.5px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: var(--color-text);
+  }
+
+  .form-row input,
+  .form-row textarea {
+    width: 100%;
+    padding: 13px 16px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-alt);
+    color: var(--color-text);
+    font-family: inherit;
+    font-size: 14.5px;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .form-row input:focus,
+  .form-row textarea:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+  }
+
+  .form-row textarea { resize: vertical; min-height: 130px; }
+
+  .form-submit {
+    width: 100%;
+    justify-content: center;
+    margin-top: 4px;
+  }
+
+  .form-status {
+    margin-top: 16px;
+    font-size: 13.5px;
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    display: none;
+  }
+
+  .form-status.show { display: block; }
+  .form-status.success { background: rgba(16, 185, 129, 0.12); color: #059669; }
+  [data-theme="dark"] .form-status.success { color: #34d399; }
+  .form-status.error { background: rgba(239, 68, 68, 0.12); color: #dc2626; }
+  [data-theme="dark"] .form-status.error { color: #f87171; }
+
+  /* ---------- Footer ---------- */
+  .footer {
+    padding: 40px 0;
+    border-top: 1px solid var(--color-border);
+    background: var(--color-bg-alt);
+  }
+
+  .footer-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .footer-inner p { font-size: 13.5px; }
+
+  .footer-social { display: flex; gap: 14px; }
+
+  .footer-social a {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+    font-size: 15px;
+    transition: color 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+  }
+
+  .footer-social a:hover {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+    transform: translateY(-3px);
+  }
+
+  /* ---------- Skills / VibeCoding & PPT & Automation ---------- */
+  .skills-blocks {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-bottom: 0;
+  }
+
+  @media (max-width: 960px) {
+    .skills-blocks { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 720px) {
+    .skills-blocks { grid-template-columns: 1fr; }
+  }
+
+  .vibe-block {
+    position: relative;
+    display: block;
+    width: 100%;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    cursor: pointer;
+    background:
+      radial-gradient(circle at 20% 25%, rgba(236, 72, 153, 0.4), transparent 55%),
+      radial-gradient(circle at 80% 75%, rgba(14, 165, 233, 0.35), transparent 55%),
+      linear-gradient(135deg, #db2777 0%, #9333ea 50%, #2563eb 100%);
+    box-shadow: 0 24px 50px rgba(219, 39, 119, 0.35);
+    padding: 56px 28px;
+    color: #ffffff;
+    text-align: center;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .vibe-block::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 40%, rgba(255, 255, 255, 0.1) 50%, transparent 60%);
+    background-size: 200% 200%;
+    animation: vibe-shimmer 6s linear infinite;
+    pointer-events: none;
+  }
+
+  @keyframes vibe-shimmer {
+    0% { background-position: 200% 200%; }
+    100% { background-position: -100% -100%; }
+  }
+
+  .vibe-block:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 32px 60px rgba(147, 51, 234, 0.45);
+  }
+
+  .vibe-icon {
+    width: 88px;
+    height: 88px;
+    margin: 0 auto 24px;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+  }
+
+  .vibe-title {
+    font-size: 32px;
+    font-weight: 900;
+    margin-bottom: 12px;
+    letter-spacing: 0.04em;
+  }
+
+  .vibe-subtitle {
+    font-size: 15px;
+    opacity: 0.92;
+    margin-bottom: 28px;
+    font-weight: 300;
+  }
+
+  .vibe-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 28px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.95);
+    color: #db2777;
+    font-size: 14px;
+    font-weight: 600;
+    transition: transform 0.25s ease, background-color 0.25s ease;
+  }
+
+  .vibe-block:hover .vibe-cta {
+    transform: scale(1.05);
+    background: #ffffff;
+  }
+
+  .vibe-cta i { transition: transform 0.25s ease; }
+  .vibe-block:hover .vibe-cta i { transform: translateY(4px); }
+
+  .vibe-detail {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.6s cubic-bezier(0.16, 1, 0.3, 1), margin-top 0.4s ease;
+    margin-top: 0;
+  }
+
+  .vibe-detail.open {
+    max-height: 2000px;
+    margin-top: 48px;
+  }
+
+  .vibe-detail-inner {
+    max-width: 720px;
+    margin: 0 auto;
+    text-align: left;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 36px 40px;
+    box-shadow: var(--shadow-md);
+  }
+
+  .vibe-intro {
+    font-size: 16px;
+    line-height: 1.85;
+    color: var(--color-text-muted);
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .vibe-game-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .vibe-game {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    padding: 20px 22px;
+    border-radius: var(--radius-sm);
+    background: var(--color-bg-alt);
+    border: 1px solid var(--color-border);
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .vibe-game:hover {
+    transform: translateX(6px);
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .vibe-game-icon {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #db2777, #9333ea);
+    color: #ffffff;
+    font-size: 20px;
+  }
+
+  .vibe-game-body { flex: 1; }
+
+  .vibe-game-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 4px;
+  }
+
+  .vibe-game-desc {
+    font-size: 13.5px;
+    color: var(--color-text-soft);
+    line-height: 1.6;
+  }
+
+  .vibe-game-placeholder {
+    font-size: 12px;
+    font-style: italic;
+    color: var(--color-text-soft);
+    opacity: 0.7;
+    margin-top: 4px;
+  }
+
+  .vibe-game-play {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    padding: 8px 20px;
+    border-radius: 999px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #ffffff;
+    background: linear-gradient(135deg, #db2777, #9333ea);
+    box-shadow: 0 6px 18px rgba(147, 51, 234, 0.35);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .vibe-game-play:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 26px rgba(147, 51, 234, 0.45);
+  }
+
+  .vibe-game-play i { font-size: 11px; }
+
+  /* PPT block (warm orange-gold gradient) */
+  .ppt-block {
+    position: relative;
+    display: block;
+    width: 100%;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    cursor: pointer;
+    background:
+      radial-gradient(circle at 20% 25%, rgba(251, 191, 36, 0.45), transparent 55%),
+      radial-gradient(circle at 80% 75%, rgba(244, 63, 94, 0.35), transparent 55%),
+      linear-gradient(135deg, #f59e0b 0%, #ef4444 50%, #7c3aed 100%);
+    box-shadow: 0 24px 50px rgba(245, 158, 11, 0.35);
+    padding: 56px 28px;
+    color: #ffffff;
+    text-align: center;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .ppt-block::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 40%, rgba(255, 255, 255, 0.1) 50%, transparent 60%);
+    background-size: 200% 200%;
+    animation: vibe-shimmer 7s linear infinite;
+    pointer-events: none;
+  }
+
+  .ppt-block:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 32px 60px rgba(239, 68, 68, 0.4);
+  }
+
+  .ppt-icon {
+    width: 88px;
+    height: 88px;
+    margin: 0 auto 24px;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+  }
+
+  .ppt-title {
+    font-size: 32px;
+    font-weight: 900;
+    margin-bottom: 12px;
+    letter-spacing: 0.04em;
+  }
+
+  .ppt-subtitle {
+    font-size: 15px;
+    opacity: 0.92;
+    margin-bottom: 28px;
+    font-weight: 300;
+  }
+
+  .ppt-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 28px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.95);
+    color: #ef4444;
+    font-size: 14px;
+    font-weight: 600;
+    transition: transform 0.25s ease, background-color 0.25s ease;
+  }
+
+  .ppt-block:hover .ppt-cta {
+    transform: scale(1.05);
+    background: #ffffff;
+  }
+
+  .ppt-cta i { transition: transform 0.25s ease; }
+  .ppt-block:hover .ppt-cta i { transform: translateY(4px); }
+
+  /* Automation block (emerald-teal-cyan gradient) */
+  .auto-block {
+    position: relative;
+    display: block;
+    width: 100%;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    cursor: pointer;
+    background:
+      radial-gradient(circle at 20% 25%, rgba(16, 185, 129, 0.5), transparent 55%),
+      radial-gradient(circle at 80% 75%, rgba(6, 182, 212, 0.4), transparent 55%),
+      linear-gradient(135deg, #059669 0%, #06b6d4 55%, #0ea5e9 100%);
+    box-shadow: 0 24px 50px rgba(6, 182, 212, 0.35);
+    padding: 56px 24px;
+    color: #ffffff;
+    text-align: center;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .auto-block::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 40%, rgba(255, 255, 255, 0.1) 50%, transparent 60%);
+    background-size: 200% 200%;
+    animation: vibe-shimmer 7s linear infinite;
+    pointer-events: none;
+  }
+
+  .auto-block:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 32px 60px rgba(16, 185, 129, 0.4);
+  }
+
+  .auto-icon {
+    width: 88px;
+    height: 88px;
+    margin: 0 auto 24px;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+  }
+
+  .auto-title {
+    font-size: 32px;
+    font-weight: 900;
+    margin-bottom: 12px;
+    letter-spacing: 0.04em;
+  }
+
+  .auto-subtitle {
+    font-size: 15px;
+    opacity: 0.92;
+    margin-bottom: 28px;
+    font-weight: 300;
+  }
+
+  .auto-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 28px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.95);
+    color: #059669;
+    font-size: 14px;
+    font-weight: 600;
+    transition: transform 0.25s ease, background-color 0.25s ease;
+  }
+
+  .auto-block:hover .auto-cta {
+    transform: scale(1.05);
+    background: #ffffff;
+  }
+
+  .auto-cta i { transition: transform 0.25s ease; }
+  .auto-block:hover .auto-cta i { transform: translateY(4px); }
+
+  .auto-detail {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.7s cubic-bezier(0.16, 1, 0.3, 1), margin-top 0.4s ease;
+    margin-top: 0;
+  }
+
+  .auto-detail.open {
+    max-height: 1600px;
+    margin-top: 48px;
+  }
+
+  .auto-detail-inner {
+    max-width: 720px;
+    margin: 0 auto;
+    text-align: left;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 36px 40px;
+    box-shadow: var(--shadow-md);
+  }
+
+  .auto-intro {
+    font-size: 16px;
+    line-height: 1.85;
+    color: var(--color-text-muted);
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .auto-flow-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .auto-flow {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    padding: 20px 22px;
+    border-radius: var(--radius-sm);
+    background: var(--color-bg-alt);
+    border: 1px solid var(--color-border);
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .auto-flow:hover {
+    transform: translateX(6px);
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .auto-flow-icon {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #059669, #06b6d4);
+    color: #ffffff;
+    font-size: 20px;
+  }
+
+  .auto-flow-body { flex: 1; }
+
+  .auto-flow-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 4px;
+  }
+
+  .auto-flow-desc {
+    font-size: 13.5px;
+    color: var(--color-text-soft);
+    line-height: 1.6;
+  }
+
+  .auto-flow-tag {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 3px 12px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #059669;
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+  }
+
+  .ppt-detail {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.7s cubic-bezier(0.16, 1, 0.3, 1), margin-top 0.4s ease;
+    margin-top: 0;
+    position: relative;
+  }
+
+  .ppt-detail.open {
+    max-height: 1600px;
+    margin-top: 56px;
+  }
+
+  .ppt-carousel-wrap {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 28px 20px 44px;
+    text-align: center;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    position: relative;
+  }
+
+  .ppt-carousel-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 4px;
+  }
+
+  .ppt-carousel-sub {
+    font-size: 13px;
+    color: var(--color-text-muted);
+    margin-bottom: 16px;
+  }
+
+  /* 环绕式轮盘(横向 16:9 卡片 - 加大版) */
+  .ppt-wheel {
+    position: relative;
+    width: 100%;
+    height: 680px;
+    perspective: 2400px;
+    user-select: none;
+    overflow: visible;
+  }
+
+  .ppt-wheel-stage {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .ppt-card {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 520px;
+    height: 300px;
+    margin-top: -150px;
+    margin-left: -260px;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    border: 1px solid var(--color-border);
+    background: #0a0612;
+    backface-visibility: hidden;
+    transition: box-shadow 0.4s ease;
+    padding: 0;
+  }
+
+  .ppt-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center center;
+    background: #0a0612;
+    display: block;
+  }
+
+  .ppt-card.is-center {
+    box-shadow: 0 30px 70px rgba(124, 58, 237, 0.45), 0 0 0 3px rgba(124,58,237,0.5);
+  }
+
+  .ppt-card-overlay {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 12px 16px;
+    background: linear-gradient(to top, rgba(0,0,0,0.85), transparent);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  /* 轮盘控制 */
+  .ppt-wheel-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-top: 8px;
+  }
+
+  .ppt-wheel-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-alt);
+    color: var(--color-text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .ppt-wheel-btn:hover {
+    transform: scale(1.08);
+    background: var(--color-primary);
+    color: #ffffff;
+    border-color: var(--color-primary);
+  }
+
+  .ppt-wheel-indicator {
+    font-family: monospace;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    min-width: 70px;
+    text-align: center;
+  }
+
+  .ppt-wheel-center-label {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgba(124,58,237,0.9);
+    color: #fff;
+    pointer-events: none;
+  }
+
+  @media (max-width: 900px) {
+    .ppt-wheel { height: 560px; perspective: 2000px; }
+    .ppt-card { width: 420px; height: 240px; margin-top: -120px; margin-left: -210px; }
+  }
+
+  @media (max-width: 640px) {
+    .ppt-wheel { height: 420px; perspective: 1700px; }
+    .ppt-card { width: 320px; height: 180px; margin-top: -90px; margin-left: -160px; }
+    .ppt-card-overlay { padding: 8px 10px; font-size: 11px; }
+  }
+
+  /* ---------- AI Certification ---------- */
+  .cert-section { text-align: center; }
+
+  .cert-block {
+    position: relative;
+    display: block;
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    cursor: pointer;
+    background:
+      radial-gradient(circle at 20% 25%, rgba(124, 58, 237, 0.35), transparent 55%),
+      radial-gradient(circle at 80% 75%, rgba(14, 165, 233, 0.28), transparent 55%),
+      linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #0ea5e9 100%);
+    box-shadow: 0 24px 50px rgba(79, 70, 229, 0.35);
+    padding: 64px 40px;
+    color: #ffffff;
+    text-align: center;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .cert-block::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 40%, rgba(255, 255, 255, 0.08) 50%, transparent 60%);
+    background-size: 200% 200%;
+    animation: cert-shimmer 6s linear infinite;
+    pointer-events: none;
+  }
+
+  @keyframes cert-shimmer {
+    0% { background-position: 200% 200%; }
+    100% { background-position: -100% -100%; }
+  }
+
+  .cert-block:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 32px 60px rgba(124, 58, 237, 0.45);
+  }
+
+  .cert-icon {
+    width: 88px;
+    height: 88px;
+    margin: 0 auto 24px;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+  }
+
+  .cert-title {
+    font-size: 32px;
+    font-weight: 900;
+    margin-bottom: 12px;
+    letter-spacing: 0.02em;
+  }
+
+  .cert-subtitle {
+    font-size: 15px;
+    opacity: 0.9;
+    margin-bottom: 28px;
+    font-weight: 300;
+  }
+
+  .cert-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 28px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.95);
+    color: #4f46e5;
+    font-size: 14px;
+    font-weight: 600;
+    transition: transform 0.25s ease, background-color 0.25s ease;
+  }
+
+  .cert-block:hover .cert-cta {
+    transform: scale(1.05);
+    background: #ffffff;
+  }
+
+  .cert-cta i { transition: transform 0.25s ease; }
+  .cert-block:hover .cert-cta i { transform: translateX(4px); }
+
+  /* 展开后的图片网格 */
+  .cert-gallery {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.6s cubic-bezier(0.16, 1, 0.3, 1), margin-top 0.4s ease;
+    margin-top: 0;
+  }
+
+  .cert-gallery.open {
+    max-height: 9000px;
+    margin-top: 48px;
+  }
+
+  .cert-gallery-inner {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    text-align: left;
+  }
+
+  .cert-group-title {
+    grid-column: 1 / -1;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    margin-top: 16px;
+    margin-bottom: 4px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .cert-group-title:first-child { margin-top: 0; }
+
+  .cert-thumb {
+    position: relative;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    aspect-ratio: 3 / 4;
+  }
+
+  .cert-thumb:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--color-primary);
+  }
+
+  .cert-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+  }
+
+  .cert-thumb:hover img { transform: scale(1.05); }
+
+  .cert-thumb-overlay {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 12px 14px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.85), transparent);
+    color: #ffffff;
+    font-size: 12.5px;
+    font-weight: 500;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .cert-thumb:hover .cert-thumb-overlay {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* 灯箱 */
+  .cert-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    background: rgba(0, 0, 0, 0.92);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .cert-lightbox.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .cert-lightbox img {
+    max-width: 90vw;
+    max-height: 88vh;
+    border-radius: var(--radius-md);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+    transform: scale(0.96);
+    transition: transform 0.3s ease;
+  }
+
+  .cert-lightbox.open img { transform: scale(1); }
+
+  .cert-lightbox-close {
+    position: absolute;
+    top: 24px;
+    right: 32px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.25s ease, transform 0.25s ease;
+  }
+
+  .cert-lightbox-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg);
+  }
+
+  .cert-lightbox-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.25s ease;
+  }
+
+  .cert-lightbox-nav:hover { background: rgba(255, 255, 255, 0.3); }
+  .cert-lightbox-prev { left: 24px; }
+  .cert-lightbox-next { right: 24px; }
+
+  .cert-lightbox-counter {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 0.85;
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 1024px) {
+    .project-grid { grid-template-columns: repeat(2, 1fr); }
+    .skills-grid { grid-template-columns: 1fr; }
+    .about-grid { grid-template-columns: 1fr; }
+    .about-avatar-wrap { order: -1; }
+    .about-avatar { width: 220px; height: 220px; font-size: 72px; }
+  }
+
+  @media (max-width: 768px) {
+    section { padding: 84px 0; }
+    .nav-links { display: none; }
+    .hamburger { display: flex; }
+    .hero-name { font-size: 38px; }
+    .hero-tagline { font-size: 16px; }
+    .project-grid { grid-template-columns: 1fr; }
+    .contact-grid { grid-template-columns: 1fr; }
+    .about-highlights { grid-template-columns: 1fr; }
+    .form-row-double { grid-template-columns: 1fr; }
+    .section-title { font-size: 28px; }
+    .footer-inner { flex-direction: column; text-align: center; }
+    .cert-gallery-inner { grid-template-columns: repeat(2, 1fr); }
+    .cert-block { padding: 48px 28px; }
+    .cert-title { font-size: 26px; }
+    .cert-lightbox-nav { width: 44px; height: 44px; font-size: 18px; }
+    .cert-lightbox-prev { left: 12px; }
+    .cert-lightbox-next { right: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="navbar scrolled" id="navbar">
+  <div class="container nav-inner">
+    <a href="#hero" class="nav-logo">潘晨<span>.</span></a>
+    <ul class="nav-links">
+      <li><a href="#about">关于我</a></li>
+      <li><a href="#skills">技能</a></li>
+      <li><a href="#ai-cert">AI认证</a></li>
+      <li><a href="#contact">联系方式</a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+        <i class="fa-solid fa-sun" id="themeIcon"></i>
+      </button>
+      <button class="hamburger" id="hamburger" aria-label="打开菜单">
+        <i class="fa-solid fa-bars" id="hamburgerIcon"></i>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <ul>
+    <li><a href="#about">关于我</a></li>
+    <li><a href="#skills">技能</a></li>
+    <li><a href="#ai-cert">AI认证</a></li>
+    <li><a href="#contact">联系方式</a></li>
+  </ul>
+</div>
+
+<section class="hero" id="hero">
+  <div class="hero-content">
+    <div class="hero-avatar"><img src="微信图片_2026-08-16_152029_136.jpg" alt="潘晨"></div>
+    <h1 class="hero-name">潘<span>晨</span></h1>
+    <p class="hero-tagline">机器人工程专业学生 / AI 工具应用爱好者 · 擅长用 AI 制作演示文稿</p>
+    <a href="#about" class="btn btn-primary">
+      了解更多 <i class="fa-solid fa-arrow-down"></i>
+    </a>
+  </div>
+</section>
+
+<section id="about">
+  <div class="container about-grid">
+    <div class="about-text reveal">
+      <h3>关于我</h3>
+      <p>
+        你好，我是潘晨，来自浙江理工大学，主修机器人工程专业。我热衷于将人工智能工具融入学习与创作的每一个环节，
+        无论是资料整理、方案设计，还是演示文稿的制作，都努力用更高效、更智能的方式完成。
+      </p>
+      <p>
+        我的专业方向聚焦于机器人系统的设计与控制，同时对人工智能在实际场景中的应用保持浓厚兴趣，
+        喜欢探索前沿工具如何提升学习和工作的效率。
+      </p>
+      <div class="about-highlights">
+        <div class="highlight-item">
+          <i class="fa-solid fa-robot"></i>
+          <div>
+            <h4>专业方向</h4>
+            <p>机器人工程 · 智能系统设计</p>
+          </div>
+        </div>
+        <div class="highlight-item">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+          <div>
+            <h4>兴趣领域</h4>
+            <p>AI 工具应用 · 智能演示制作</p>
+          </div>
+        </div>
+        <div class="highlight-item">
+          <i class="fa-solid fa-lightbulb"></i>
+          <div>
+            <h4>个人亮点</h4>
+            <p>精通多种 AI 工具的组合使用</p>
+          </div>
+        </div>
+        <div class="highlight-item">
+          <i class="fa-solid fa-graduation-cap"></i>
+          <div>
+            <h4>就读院校</h4>
+            <p>浙江理工大学</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="about-avatar-wrap reveal reveal-delay-1">
+      <div class="about-avatar"><img src="微信图片_2026-08-16_152029_136.jpg" alt="潘晨"></div>
+    </div>
+  </div>
+</section>
+
+<section id="skills">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-tag">SKILLS</span>
+      <h2 class="section-title">技能展示</h2>
+      <p class="section-subtitle">多元能力 · Vibe Coding · PPT 演示 · AI 自动化</p>
+    </div>
+
+    <div class="skills-blocks">
+      <div class="vibe-block reveal" id="vibeBlock" role="button" tabindex="0" aria-label="点击查看 Vibe Coding 作品">
+        <div class="vibe-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+        <h3 class="vibe-title">Vibe Coding</h3>
+        <p class="vibe-subtitle">用自然语言驱动 AI，把想法快速变成可运行的产品</p>
+        <span class="vibe-cta">查看作品 <i class="fa-solid fa-arrow-down"></i></span>
+      </div>
+
+      <div class="ppt-block reveal reveal-delay-1" id="pptBlock" role="button" tabindex="0" aria-label="点击查看 PPT 演示">
+        <div class="ppt-icon"><i class="fa-solid fa-presentation-screen"></i></div>
+        <h3 class="ppt-title">PPT 展示</h3>
+        <p class="ppt-subtitle">用 AI 辅助制作专业演示，信息表达更直观有力</p>
+        <span class="ppt-cta">作品展示 <i class="fa-solid fa-arrow-down"></i></span>
+      </div>
+
+      <div class="auto-block reveal reveal-delay-2" id="autoBlock" role="button" tabindex="0" aria-label="点击查看 AI 自动化能力">
+        <div class="auto-icon"><i class="fa-solid fa-robot"></i></div>
+        <h3 class="auto-title">自动化</h3>
+        <p class="auto-subtitle">熟练运用 AI 驱动自动化工作流，让重复的事交给机器</p>
+        <span class="auto-cta">查看能力 <i class="fa-solid fa-arrow-down"></i></span>
+      </div>
+    </div>
+
+    <div class="auto-detail" id="autoDetail">
+      <div class="auto-detail-inner">
+        <p class="auto-intro">
+          我擅长把 AI 接入日常工作的各个环节，让原本需要人工反复操作的事情自动跑起来。
+          从信息采集、内容整理到消息推送，只需配置好规则与提示词，AI 就能按需定时执行，
+          把重复劳动变成一条条静默运行的工作流——我只需关注结果，过程交给自动化。
+        </p>
+        <div class="auto-flow-list">
+          <div class="auto-flow">
+            <div class="auto-flow-icon"><i class="fa-solid fa-paper-plane"></i></div>
+            <div class="auto-flow-body">
+              <div class="auto-flow-name">飞书资讯推送</div>
+              <div class="auto-flow-desc">让 AI 定时抓取行业资讯，自动摘要整理后推送到我的飞书，打开即可阅读精选要闻，省去四处浏览的时间。</div>
+              <span class="auto-flow-tag">信息聚合 · 定时推送</span>
+            </div>
+          </div>
+          <div class="auto-flow">
+            <div class="auto-flow-icon"><i class="fa-solid fa-diagram-project"></i></div>
+            <div class="auto-flow-body">
+              <div class="auto-flow-name">工作流串联</div>
+              <div class="auto-flow-desc">用 AI 串联多个工具与接口，把分散的步骤合并成一条自动链路，减少人工搬运与重复点击。</div>
+              <span class="auto-flow-tag">多工具协同</span>
+            </div>
+          </div>
+          <div class="auto-flow">
+            <div class="auto-flow-icon"><i class="fa-solid fa-bell"></i></div>
+            <div class="auto-flow-body">
+              <div class="auto-flow-name">智能提醒与任务</div>
+              <div class="auto-flow-desc">AI 根据日程与待办自动生成提醒，按重要程度排序后送达，让节奏不再被打断。</div>
+              <span class="auto-flow-tag">主动触达</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="vibe-detail" id="vibeDetail">
+      <div class="vibe-detail-inner">
+        <p class="vibe-intro">
+          玩游戏是每个孩子的爱好，如今我通过学习 Vibe Coding，自己做出了几款可以亲手玩的小游戏。
+          从灵感闪现到代码落地，从画面调优到操作手感，每一步都是在和 AI 对话中完成的——
+          这是一种全新的创造方式，让每个热爱游戏的人，都有机会成为游戏的创造者。
+        </p>
+        <div class="vibe-game-list">
+          <div class="vibe-game">
+            <div class="vibe-game-icon"><i class="fa-solid fa-plane"></i></div>
+            <div class="vibe-game-body">
+              <div class="vibe-game-name">飞机大战</div>
+              <div class="vibe-game-desc">经典纵向卷轴射击玩法，配合 Boss 战与多种弹幕。</div>
+              <a class="vibe-game-play" href="https://pc666-koi.github.io/pc66/" target="_blank" rel="noopener">
+                <i class="fa-solid fa-play"></i> 立即试玩
+              </a>
+            </div>
+          </div>
+          <div class="vibe-game">
+            <div class="vibe-game-icon"><i class="fa-solid fa-atom"></i></div>
+            <div class="vibe-game-body">
+              <div class="vibe-game-name">粒子动效</div>
+              <div class="vibe-game-desc">基于 WebGL 的实时粒子系统，呈现炫酷的视觉动效。</div>
+              <a class="vibe-game-play" href="https://pc666-koi.github.io/lizi/" target="_blank" rel="noopener">
+                <i class="fa-solid fa-play"></i> 立即试玩
+              </a>
+            </div>
+          </div>
+          <div class="vibe-game">
+            <div class="vibe-game-icon"><i class="fa-solid fa-hand-scissors"></i></div>
+            <div class="vibe-game-body">
+              <div class="vibe-game-name">手势切西瓜</div>
+              <div class="vibe-game-desc">通过摄像头识别手势，挥手即可切开飞出的西瓜。</div>
+              <a class="vibe-game-play" href="https://pc666-koi.github.io/qiexigua/" target="_blank" rel="noopener">
+                <i class="fa-solid fa-play"></i> 立即试玩
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ppt-detail" id="pptDetail">
+      <div class="ppt-carousel-wrap">
+        <h3 class="ppt-carousel-title">演示文稿截图</h3>
+        <p class="ppt-carousel-sub">左右切换查看 8 张页面 · 3D 环绕式浏览</p>
+        <div class="ppt-wheel" id="pptWheel">
+          <div class="ppt-wheel-stage" id="pptWheelStage"></div>
+        </div>
+        <div class="ppt-wheel-controls">
+          <button type="button" class="ppt-wheel-btn" id="pptPrevBtn" aria-label="上一张"><i class="fa-solid fa-chevron-left"></i></button>
+          <span class="ppt-wheel-indicator" id="pptIndicator">01 / 08</span>
+          <button type="button" class="ppt-wheel-btn" id="pptNextBtn" aria-label="下一张"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="ai-cert" class="cert-section" style="background: var(--color-bg-alt);">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-tag">CERTIFICATIONS</span>
+      <h2 class="section-title">AI 认证</h2>
+      <p class="section-subtitle">学习路上收集的 AI 相关认证证书</p>
+    </div>
+
+    <div class="cert-block reveal" id="certBlock" role="button" tabindex="0" aria-label="点击查看证书">
+      <div class="cert-icon"><i class="fa-solid fa-certificate"></i></div>
+      <h3 class="cert-title">我的 AI 认证证书</h3>
+      <p class="cert-subtitle">点击下方按钮，查看完整证书合集</p>
+      <span class="cert-cta">
+        查看证书 <i class="fa-solid fa-arrow-right"></i>
+      </span>
+    </div>
+
+    <div class="cert-gallery" id="certGallery">
+      <div class="cert-gallery-inner">
+        <div class="cert-group-title">人工智能训练师</div>
+        <div class="cert-thumb" data-full="AI证书/人工智能训练师（初级）-潘晨-20260712.jpg">
+          <img src="AI证书/人工智能训练师（初级）-潘晨-20260712.jpg" alt="人工智能训练师初级" loading="lazy">
+          <div class="cert-thumb-overlay">人工智能训练师（初级）</div>
+        </div>
+        <div class="cert-thumb" data-full="AI证书/人工智能训练师（高级）-潘晨-20260714 (2).jpg">
+          <img src="AI证书/人工智能训练师（高级）-潘晨-20260714 (2).jpg" alt="人工智能训练师高级" loading="lazy">
+          <div class="cert-thumb-overlay">人工智能训练师（高级）</div>
+        </div>
+
+        <div class="cert-group-title">阿里云</div>
+        <div class="cert-thumb" data-full="AI证书/阿里云（1）.png">
+          <img src="AI证书/阿里云（1）.png" alt="阿里云证书1" loading="lazy">
+          <div class="cert-thumb-overlay">阿里云 1</div>
+        </div>
+        <div class="cert-thumb" data-full="AI证书/阿里云 (2).png">
+          <img src="AI证书/阿里云 (2).png" alt="阿里云证书2" loading="lazy">
+          <div class="cert-thumb-overlay">阿里云 2</div>
+        </div>
+        <div class="cert-thumb" data-full="AI证书/阿里云(3).png">
+          <img src="AI证书/阿里云(3).png" alt="阿里云证书3" loading="lazy">
+          <div class="cert-thumb-overlay">阿里云 3</div>
+        </div>
+        <div class="cert-thumb" data-full="AI证书/阿里云（4）.png">
+          <img src="AI证书/阿里云（4）.png" alt="阿里云证书4" loading="lazy">
+          <div class="cert-thumb-overlay">阿里云 4</div>
+        </div>
+        <div class="cert-thumb" data-full="AI证书/阿里云（5）.png">
+          <img src="AI证书/阿里云（5）.png" alt="阿里云证书5" loading="lazy">
+          <div class="cert-thumb-overlay">阿里云 5</div>
+        </div>
+        <div class="cert-thumb" data-full="AI证书/阿里云（6）.png">
+          <img src="AI证书/阿里云（6）.png" alt="阿里云证书6" loading="lazy">
+          <div class="cert-thumb-overlay">阿里云 6</div>
+        </div>
+        <div class="cert-thumb" data-full="AI证书/阿里云（7）.png">
+          <img src="AI证书/阿里云（7）.png" alt="阿里云证书7" loading="lazy">
+          <div class="cert-thumb-overlay">阿里云 7</div>
+        </div>
+        <div class="cert-thumb" data-full="AI证书/阿里云（8）.png">
+          <img src="AI证书/阿里云（8）.png" alt="阿里云证书8" loading="lazy">
+          <div class="cert-thumb-overlay">阿里云 8</div>
+        </div>
+
+        <div class="cert-group-title">华为</div>
+        <div class="cert-thumb" data-full="AI证书/华为（1）.png">
+          <img src="AI证书/华为（1）.png" alt="华为证书1" loading="lazy">
+          <div class="cert-thumb-overlay">华为 1</div>
+        </div>
+        <div class="cert-thumb" data-full="AI证书/华为（2）.png">
+          <img src="AI证书/华为（2）.png" alt="华为证书2" loading="lazy">
+          <div class="cert-thumb-overlay">华为 2</div>
+        </div>
+        <div class="cert-thumb" data-full="AI证书/华为（3）.png">
+          <img src="AI证书/华为（3）.png" alt="华为证书3" loading="lazy">
+          <div class="cert-thumb-overlay">华为 3</div>
+        </div>
+        <div class="cert-thumb" data-full="AI证书/华为（4）.png">
+          <img src="AI证书/华为（4）.png" alt="华为证书4" loading="lazy">
+          <div class="cert-thumb-overlay">华为 4</div>
+        </div>
+        <div class="cert-thumb" data-full="AI证书/华为（5）.png">
+          <img src="AI证书/华为（5）.png" alt="华为证书5" loading="lazy">
+          <div class="cert-thumb-overlay">华为 5</div>
+        </div>
+        <div class="cert-thumb" data-full="AI证书/华为（6）.png">
+          <img src="AI证书/华为（6）.png" alt="华为证书6" loading="lazy">
+          <div class="cert-thumb-overlay">华为 6</div>
+        </div>
+        <div class="cert-thumb" data-full="AI证书/华为（7）.png">
+          <img src="AI证书/华为（7）.png" alt="华为证书7" loading="lazy">
+          <div class="cert-thumb-overlay">华为 7</div>
+        </div>
+
+        <div class="cert-group-title">Datawhale</div>
+        <div class="cert-thumb" data-full="AI证书/datawhale（1）.png">
+          <img src="AI证书/datawhale（1）.png" alt="datawhale证书1" loading="lazy">
+          <div class="cert-thumb-overlay">Datawhale 1</div>
+        </div>
+        <div class="cert-thumb" data-full="AI证书/datawhale（2）.png">
+          <img src="AI证书/datawhale（2）.png" alt="datawhale证书2" loading="lazy">
+          <div class="cert-thumb-overlay">Datawhale 2</div>
+        </div>
+        <div class="cert-thumb" data-full="AI证书/datawhale（3）.png">
+          <img src="AI证书/datawhale（3）.png" alt="datawhale证书3" loading="lazy">
+          <div class="cert-thumb-overlay">Datawhale 3</div>
+        </div>
+        <div class="cert-thumb" data-full="AI证书/datawhale（4）.png">
+          <img src="AI证书/datawhale（4）.png" alt="datawhale证书4" loading="lazy">
+          <div class="cert-thumb-overlay">Datawhale 4</div>
+        </div>
+        <div class="cert-thumb" data-full="AI证书/datawhale（5）.png">
+          <img src="AI证书/datawhale（5）.png" alt="datawhale证书5" loading="lazy">
+          <div class="cert-thumb-overlay">Datawhale 5</div>
+        </div>
+        <div class="cert-thumb" data-full="AI证书/datawhale（6）.png">
+          <img src="AI证书/datawhale（6）.png" alt="datawhale证书6" loading="lazy">
+          <div class="cert-thumb-overlay">Datawhale 6</div>
+        </div>
+        <div class="cert-thumb" data-full="AI证书/datawhale（7）.png">
+          <img src="AI证书/datawhale（7）.png" alt="datawhale证书7" loading="lazy">
+          <div class="cert-thumb-overlay">Datawhale 7</div>
+        </div>
+        <div class="cert-thumb" data-full="AI证书/datawhale（8）.png">
+          <img src="AI证书/datawhale（8）.png" alt="datawhale证书8" loading="lazy">
+          <div class="cert-thumb-overlay">Datawhale 8</div>
+        </div>
+
+        <div class="cert-group-title">科大讯飞</div>
+        <div class="cert-thumb" data-full="AI证书/科大讯飞（1）.png">
+          <img src="AI证书/科大讯飞（1）.png" alt="科大讯飞证书1" loading="lazy">
+          <div class="cert-thumb-overlay">科大讯飞 1</div>
+        </div>
+        <div class="cert-thumb" data-full="AI证书/科大讯飞（2）.png">
+          <img src="AI证书/科大讯飞（2）.png" alt="科大讯飞证书2" loading="lazy">
+          <div class="cert-thumb-overlay">科大讯飞 2</div>
+        </div>
+        <div class="cert-thumb" data-full="AI证书/科大讯飞（3）.png">
+          <img src="AI证书/科大讯飞（3）.png" alt="科大讯飞证书3" loading="lazy">
+          <div class="cert-thumb-overlay">科大讯飞 3</div>
+        </div>
+        <div class="cert-thumb" data-full="AI证书/科大讯飞（4）.png">
+          <img src="AI证书/科大讯飞（4）.png" alt="科大讯飞证书4" loading="lazy">
+          <div class="cert-thumb-overlay">科大讯飞 4</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 灯箱 -->
+<div class="cert-lightbox" id="certLightbox" role="dialog" aria-modal="true" aria-label="证书查看">
+  <button class="cert-lightbox-close" id="certLightboxClose" aria-label="关闭"><i class="fa-solid fa-xmark"></i></button>
+  <button class="cert-lightbox-nav cert-lightbox-prev" id="certLightboxPrev" aria-label="上一张"><i class="fa-solid fa-chevron-left"></i></button>
+  <img id="certLightboxImg" src="" alt="证书大图">
+  <button class="cert-lightbox-nav cert-lightbox-next" id="certLightboxNext" aria-label="下一张"><i class="fa-solid fa-chevron-right"></i></button>
+  <div class="cert-lightbox-counter" id="certLightboxCounter"></div>
+</div>
+
+<section id="contact">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-tag">CONTACT</span>
+      <h2 class="section-title">联系方式</h2>
+      <p class="section-subtitle">欢迎交流合作，或留下你的消息</p>
+    </div>
+    <div class="contact-grid">
+      <div class="contact-info-card reveal">
+        <h3>保持联系</h3>
+        <p>无论是项目合作、学习交流还是内推机会，都欢迎与我联系。</p>
+        <div class="contact-social-list">
+          <a class="contact-social-item" href="mailto:412332160@qq.com">
+            <i class="fa-solid fa-envelope"></i>
+            <div>
+              <div class="label">邮箱</div>
+              <div class="value">412332160@qq.com</div>
+            </div>
+          </a>
+          <div class="contact-social-item">
+            <i class="fa-brands fa-weixin"></i>
+            <div>
+              <div class="label">微信</div>
+              <div class="value">wxid_tm6hcuvd19pa22</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <p>© 2026 潘晨. All rights reserved.</p>
+    <div class="footer-social">
+      <a href="mailto:412332160@qq.com" aria-label="邮箱"><i class="fa-solid fa-envelope"></i></a>
+      <a href="#" aria-label="微信"><i class="fa-brands fa-weixin"></i></a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    // ---------- Theme ----------
+    const root = document.documentElement;
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+
+    function applyTheme(theme) {
+      if (theme === 'dark') {
+        root.setAttribute('data-theme', 'dark');
+        themeIcon.classList.remove('fa-moon');
+        themeIcon.classList.add('fa-sun');
+      } else {
+        root.removeAttribute('data-theme');
+        themeIcon.classList.remove('fa-sun');
+        themeIcon.classList.add('fa-moon');
+      }
+    }
+
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    applyTheme(savedTheme || (prefersDark ? 'dark' : 'light'));
+
+    themeToggle.addEventListener('click', function () {
+      const isDark = root.getAttribute('data-theme') === 'dark';
+      const next = isDark ? 'light' : 'dark';
+      applyTheme(next);
+      localStorage.setItem('theme', next);
+    });
+
+    // ---------- Navbar scroll state ----------
+    const navbar = document.getElementById('navbar');
+    function onScroll() {
+      if (window.scrollY > 20) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+    }
+    window.addEventListener('scroll', onScroll);
+    onScroll();
+
+    // ---------- Mobile menu ----------
+    const hamburger = document.getElementById('hamburger');
+    const hamburgerIcon = document.getElementById('hamburgerIcon');
+    const mobileMenu = document.getElementById('mobileMenu');
+
+    function closeMobileMenu() {
+      mobileMenu.classList.remove('open');
+      hamburgerIcon.classList.remove('fa-xmark');
+      hamburgerIcon.classList.add('fa-bars');
+    }
+
+    hamburger.addEventListener('click', function () {
+      const isOpen = mobileMenu.classList.toggle('open');
+      hamburgerIcon.classList.toggle('fa-bars', !isOpen);
+      hamburgerIcon.classList.toggle('fa-xmark', isOpen);
+    });
+
+    mobileMenu.querySelectorAll('a').forEach(function (link) {
+      link.addEventListener('click', closeMobileMenu);
+    });
+
+    // ---------- Smooth scroll for nav links ----------
+    document.querySelectorAll('a[href^="#"]').forEach(function (link) {
+      link.addEventListener('click', function (e) {
+        const targetId = this.getAttribute('href');
+        if (targetId === '#') return;
+        const target = document.querySelector(targetId);
+        if (target) {
+          e.preventDefault();
+          const offset = document.getElementById('navbar').offsetHeight;
+          const top = target.getBoundingClientRect().top + window.scrollY - offset + 1;
+          window.scrollTo({ top: top, behavior: 'smooth' });
+        }
+      });
+    });
+
+    // ---------- Reveal on scroll ----------
+    const revealEls = document.querySelectorAll('.reveal');
+    const revealObserver = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.15 }
+    );
+    revealEls.forEach(function (el) { revealObserver.observe(el); });
+
+    // ---------- Skill bars animate on view ----------
+    const skillBars = document.querySelectorAll('.skill-bar-fill');
+    const skillObserver = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            const el = entry.target;
+            el.style.width = el.getAttribute('data-target') + '%';
+            skillObserver.unobserve(el);
+          }
+        });
+      },
+      { threshold: 0.4 }
+    );
+    skillBars.forEach(function (el) { skillObserver.observe(el); });
+
+    // ---------- Vibe Coding ----------
+    const vibeBlock = document.getElementById('vibeBlock');
+    const vibeDetail = document.getElementById('vibeDetail');
+
+    function toggleVibe() {
+      const isOpen = vibeDetail.classList.toggle('open');
+      const icon = vibeBlock.querySelector('.vibe-cta i');
+      icon.classList.toggle('fa-arrow-down', !isOpen);
+      icon.classList.toggle('fa-arrow-up', isOpen);
+      vibeBlock.querySelector('.vibe-cta').firstChild.textContent = isOpen ? '收起 ' : '查看作品 ';
+    }
+
+    vibeBlock.addEventListener('click', toggleVibe);
+    vibeBlock.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggleVibe();
+      }
+    });
+
+    // ---------- PPT 环绕式轮盘 ----------
+    const pptBlock = document.getElementById('pptBlock');
+    const pptDetail = document.getElementById('pptDetail');
+    const pptWheelStage = document.getElementById('pptWheelStage');
+    const pptIndicator = document.getElementById('pptIndicator');
+    const pptPrevBtn = document.getElementById('pptPrevBtn');
+    const pptNextBtn = document.getElementById('pptNextBtn');
+
+    const pptImages = [
+      { src: 'PPT/屏幕截图 2026-08-16 190914.png', label: '封面' },
+      { src: 'PPT/屏幕截图 2026-08-16 190920.png', label: '目录' },
+      { src: 'PPT/屏幕截图 2026-08-16 190925.png', label: '第 3 页' },
+      { src: 'PPT/屏幕截图 2026-08-16 190939.png', label: '第 4 页' },
+      { src: 'PPT/屏幕截图 2026-08-16 190946.png', label: '第 5 页' },
+      { src: 'PPT/屏幕截图 2026-08-16 190952.png', label: '第 6 页' },
+      { src: 'PPT/屏幕截图 2026-08-16 190957.png', label: '第 7 页' },
+      { src: 'PPT/屏幕截图 2026-08-16 191003.png', label: '结尾' }
+    ];
+
+    let pptCurrent = 0;
+    let pptBuilt = false;
+
+    function buildPptWheel() {
+      if (pptBuilt) return;
+      const N = pptImages.length;
+      const radius = 720;
+      const angleStep = 360 / N;
+      pptWheelStage.innerHTML = '';
+      pptImages.forEach(function (item, i) {
+        const card = document.createElement('div');
+        card.className = 'ppt-card';
+        card.dataset.index = String(i);
+        const angle = angleStep * i;
+        card.style.transform = `rotateY(${angle}deg) translateZ(${radius}px)`;
+        const img = document.createElement('img');
+        img.src = item.src;
+        img.alt = 'PPT 截图 ' + (i + 1);
+        img.loading = 'lazy';
+        card.appendChild(img);
+        const overlay = document.createElement('div');
+        overlay.className = 'ppt-card-overlay';
+        const lab = document.createElement('span');
+        lab.textContent = item.label;
+        const num = document.createElement('span');
+        num.textContent = String(i + 1).padStart(2, '0') + ' / ' + String(N).padStart(2, '0');
+        overlay.appendChild(lab);
+        overlay.appendChild(num);
+        card.appendChild(overlay);
+        card.addEventListener('click', function () {
+          if (pptCurrent !== i) {
+            pptCurrent = i;
+            updatePptWheel();
+          } else {
+            openPptLightbox(i);
+          }
+        });
+        pptWheelStage.appendChild(card);
+      });
+      pptBuilt = true;
+    }
+
+    function updatePptWheel() {
+      const N = pptImages.length;
+      const angleStep = 360 / N;
+      const rotate = -angleStep * pptCurrent;
+      pptWheelStage.style.transform = `rotateY(${rotate}deg)`;
+      document.querySelectorAll('.ppt-card').forEach(function (card, i) {
+        card.classList.toggle('is-center', i === pptCurrent);
+      });
+      pptIndicator.textContent =
+        String(pptCurrent + 1).padStart(2, '0') + ' / ' + String(N).padStart(2, '0');
+    }
+
+    function togglePpt() {
+      const isOpen = pptDetail.classList.toggle('open');
+      const icon = pptBlock.querySelector('.ppt-cta i');
+      icon.classList.toggle('fa-arrow-down', !isOpen);
+      icon.classList.toggle('fa-arrow-up', isOpen);
+      pptBlock.querySelector('.ppt-cta').firstChild.textContent = isOpen ? '收起 ' : '作品展示 ';
+      if (isOpen) {
+        buildPptWheel();
+        setTimeout(updatePptWheel, 50);
+      }
+    }
+
+    pptBlock.addEventListener('click', togglePpt);
+    pptBlock.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        togglePpt();
+      }
+    });
+
+    // ---------- Automation ----------
+    const autoBlock = document.getElementById('autoBlock');
+    const autoDetail = document.getElementById('autoDetail');
+
+    function toggleAuto() {
+      const isOpen = autoDetail.classList.toggle('open');
+      const icon = autoBlock.querySelector('.auto-cta i');
+      icon.classList.toggle('fa-arrow-down', !isOpen);
+      icon.classList.toggle('fa-arrow-up', isOpen);
+      autoBlock.querySelector('.auto-cta').firstChild.textContent = isOpen ? '收起 ' : '查看能力 ';
+    }
+
+    autoBlock.addEventListener('click', toggleAuto);
+    autoBlock.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggleAuto();
+      }
+    });
+
+    pptPrevBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      pptCurrent = (pptCurrent - 1 + pptImages.length) % pptImages.length;
+      updatePptWheel();
+    });
+    pptNextBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      pptCurrent = (pptCurrent + 1) % pptImages.length;
+      updatePptWheel();
+    });
+
+    // PPT 灯箱(点击中心卡看大图)
+    const pptLightbox = document.createElement('div');
+    pptLightbox.id = 'pptLightbox';
+    pptLightbox.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:9999;cursor:pointer;';
+    const pptLbInner = document.createElement('div');
+    pptLbInner.style.cssText = 'position:relative;max-width:85vw;max-height:85vh;cursor:auto;';
+    const pptLbImg = document.createElement('img');
+    pptLbImg.style.cssText = 'max-width:100%;max-height:85vh;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,0.6);display:block;';
+    const pptLbClose = document.createElement('button');
+    pptLbClose.type = 'button';
+    pptLbClose.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+    pptLbClose.style.cssText = 'position:absolute;top:-18px;right:-18px;width:40px;height:40px;border-radius:50%;border:1px solid #fff3;background:#0008;color:#fff;cursor:pointer;font-size:16px;backdrop-filter:blur(8px);';
+    pptLbInner.appendChild(pptLbImg);
+    pptLbInner.appendChild(pptLbClose);
+    pptLightbox.appendChild(pptLbInner);
+    document.body.appendChild(pptLightbox);
+    function openPptLightbox(i) {
+      pptLbImg.src = pptImages[i].src;
+      pptLightbox.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+    function closePptLightbox() {
+      pptLightbox.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+    pptLightbox.addEventListener('click', function (e) {
+      if (e.target === pptLightbox || e.target === pptLbClose) closePptLightbox();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (pptLightbox.style.display === 'flex' && e.key === 'Escape') closePptLightbox();
+    });
+
+    // ---------- AI Certification ----------
+    const certBlock = document.getElementById('certBlock');
+    const certGallery = document.getElementById('certGallery');
+    const certLightbox = document.getElementById('certLightbox');
+    const certLightboxImg = document.getElementById('certLightboxImg');
+    const certLightboxClose = document.getElementById('certLightboxClose');
+    const certLightboxPrev = document.getElementById('certLightboxPrev');
+    const certLightboxNext = document.getElementById('certLightboxNext');
+    const certLightboxCounter = document.getElementById('certLightboxCounter');
+
+    const certThumbs = Array.prototype.slice.call(document.querySelectorAll('.cert-thumb'));
+    let certCurrentIndex = 0;
+
+    function toggleGallery() {
+      const isOpen = certGallery.classList.toggle('open');
+      certBlock.querySelector('.cert-cta i').classList.toggle('fa-arrow-right', !isOpen);
+      certBlock.querySelector('.cert-cta i').classList.toggle('fa-arrow-up', isOpen);
+      certBlock.querySelector('.cert-cta').firstChild.textContent = isOpen ? '收起证书 ' : '查看证书 ';
+    }
+
+    certBlock.addEventListener('click', toggleGallery);
+    certBlock.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggleGallery();
+      }
+    });
+
+    function openLightbox(index) {
+      certCurrentIndex = index;
+      const thumb = certThumbs[index];
+      certLightboxImg.src = thumb.getAttribute('data-full');
+      certLightboxCounter.textContent = (index + 1) + ' / ' + certThumbs.length;
+      certLightbox.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+      certLightbox.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function showCert(direction) {
+      certCurrentIndex = (certCurrentIndex + direction + certThumbs.length) % certThumbs.length;
+      const thumb = certThumbs[certCurrentIndex];
+      certLightboxImg.src = thumb.getAttribute('data-full');
+      certLightboxCounter.textContent = (certCurrentIndex + 1) + ' / ' + certThumbs.length;
+    }
+
+    certThumbs.forEach(function (thumb, index) {
+      thumb.addEventListener('click', function () { openLightbox(index); });
+    });
+
+    certLightboxClose.addEventListener('click', closeLightbox);
+    certLightboxPrev.addEventListener('click', function () { showCert(-1); });
+    certLightboxNext.addEventListener('click', function () { showCert(1); });
+    certLightbox.addEventListener('click', function (e) {
+      if (e.target === certLightbox) closeLightbox();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (!certLightbox.classList.contains('open')) return;
+      if (e.key === 'Escape') closeLightbox();
+      else if (e.key === 'ArrowLeft') showCert(-1);
+      else if (e.key === 'ArrowRight') showCert(1);
+    });
+  })();
+</script>
+
+</body>
+</html>
